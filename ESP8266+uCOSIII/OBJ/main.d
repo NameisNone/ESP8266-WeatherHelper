@@ -32,3 +32,7 @@
 ..\obj\main.o: ..\STM32F10x_FWLib\inc\misc.h
 ..\obj\main.o: ..\SYSTEM\delay\delay.h
 ..\obj\main.o: ..\HARDWARE\KEY\key.h
+..\obj\main.o: ..\HARDWARE\EspUART\EspUart.h
+..\obj\main.o: ..\SYSTEM\usart\usart.h
+..\obj\main.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\main.o: ..\HARDWARE\WiFi\wifi.h

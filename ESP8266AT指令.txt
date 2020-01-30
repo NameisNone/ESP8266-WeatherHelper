@@ -1,0 +1,21 @@
+本地wifi：
+------------
+SSID:CMCC-Y3ff
+PSWD:9uas4tfq
+
+AT指令集合：
+1、设置STA模式
+AT+CWMODE=1
+2、加入Ap
+AT+CWJAP="CMCC-Y3ff","9uas4tfq"
+3、设置单连接
+AT+CIPMUX=0
+4、连接服务器
+AT+CIPSTART="TCP","api.seniverse.com",80
+AT+CIPSTART="TCP","api.seniverse.com","80"
+5、设置透传模式
+AT+CIPMODE=1
+6、开启透传模式
+AT+CIPSEND
+7、发送http请求，获取天气信息
+GET https://api.seniverse.com/v3/weather/now.json?key=Si4evEh1Az2pvdyB5&location=guilin&language=en&unit=c

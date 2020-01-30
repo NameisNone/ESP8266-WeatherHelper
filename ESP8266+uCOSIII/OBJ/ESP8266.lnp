@@ -5,6 +5,7 @@
 "..\obj\led.o"
 "..\obj\key.o"
 "..\obj\espuart.o"
+"..\obj\wifi.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"
@@ -14,6 +15,8 @@
 "..\obj\stm32f10x_rcc.o"
 "..\obj\stm32f10x_usart.o"
 "..\obj\misc.o"
+"..\obj\stm32f10x_dma.o"
+"..\obj\stm32f10x_tim.o"
 --strict --scatter "..\OBJ\ESP8266.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -29,3 +29,8 @@
 ..\obj\espuart.o: ..\STM32F10x_FWLib\inc\stm32f10x_usart.h
 ..\obj\espuart.o: ..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 ..\obj\espuart.o: ..\STM32F10x_FWLib\inc\misc.h
+..\obj\espuart.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\espuart.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\espuart.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\string.h
+..\obj\espuart.o: ..\SYSTEM\delay\delay.h
+..\obj\espuart.o: ..\SYSTEM\sys\sys.h
