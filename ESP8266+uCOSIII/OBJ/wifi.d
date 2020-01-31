@@ -35,3 +35,5 @@
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\wifi.o: ..\SYSTEM\usart\usart.h
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\wifi.o: ..\cJSON\cJSON.h
+..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stddef.h

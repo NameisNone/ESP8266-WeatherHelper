@@ -36,3 +36,5 @@
 ..\obj\main.o: ..\SYSTEM\usart\usart.h
 ..\obj\main.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\main.o: ..\HARDWARE\WiFi\wifi.h
+..\obj\main.o: ..\HARDWARE\LCD\lcd.h
+..\obj\main.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdlib.h
