@@ -19,3 +19,13 @@ AT+CIPMODE=1
 AT+CIPSEND
 7、发送http请求，获取天气信息
 GET https://api.seniverse.com/v3/weather/now.json?key=Si4evEh1Az2pvdyB5&location=guilin&language=en&unit=c
+
+接收到的数据：
+{"results":[{"location":{"id":"WKQRV6P6WM81","name":"Guilin","country":"CN","path":"Guilin,Guilin,Guangxi,China","timezone":"Asia/Shanghai","timezone_offset":"+08:00"},"now":{"text":"Cloudy","code":"4","temperature":"12"},"last_update":"2020-02-01T11:00:00+08:00"}]}
+
+
+[path":"Guilin,Guilin,Guangxi,China","timezone":"Asia/Shanghai","timezone_offset":"+08:00"},"now":{"text":"Cloudy","code":"4","temperature":"12"},"last_update":"2020-02-01T11:09:00+08:00"}]}]
+
+
+Error before: [temperature":"12"},"last_update":"2020-02-01T11:49:00+08:00"}]}]
+
