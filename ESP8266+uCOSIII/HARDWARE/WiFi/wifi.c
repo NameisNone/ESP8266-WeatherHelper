@@ -5,6 +5,9 @@
 #include "usart.h"
 #include "stdio.h"
 #include "cJSON.h"
+#include "malloc.h"
+#include "Weather.h"
+#include "stdlib.h"
 
 /*发送AT指令函数*/
 //0，发送成功，1，发送失败
@@ -195,80 +198,100 @@ u8 atk_8266_send_data(u8 *data,u8 *ack,u16 waittime)
 	return res;
 }
 
-
+WeatherData *userData;
 /*JSON解析函数*/
-void cJSON_Parse_Uart(char* jsonBuf)
+void cJSON_Parse_Uart(char *jsonBuf)
 {
-	cJSON* cjson_main = NULL;
-	cJSON* cjson_results = NULL;
-	cJSON* cjson_resultsArray = NULL;
-	cJSON* cjson_keyvalue = NULL;
-	
-/*	cJSON* cjson_location = NULL;
-	cJSON* cjson_name = NULL;,char *realData
-	cJSON* cjson_now = NULL;
-	cJSON* cjson_text = NULL;
-	cJSON* cjson_code = NULL;
-	cJSON* cjson_temp = NULL; */
+	cJSON* cjson_main;
+	cJSON* cjson_results;
+	cJSON* cjson_resultsArray_Obj;
+	cJSON *cjson_Key, *cjson_Value;
+	//u8 *json_str;
 	
 	cjson_main = cJSON_Parse(jsonBuf);//解析json整体
 	if(cjson_main==NULL)
 	{
+		printf("Error before: [%s]\r\n",cJSON_GetErrorPtr()); //打印数据包语法错误的位置
 		#ifdef DEBUG_EN
-		printf("cjson解析失败！\r\n");
+			printf("cjson解析失败！\r\n");
 		#endif
 		return ;
 	}
 	
-	if((cjson_results = cJSON_GetObjectItem(cjson_main,"results")) != NULL)//解析results对象成功
+/*	#ifdef DEBUG_EN
+		printf("\r\n\r\n\r\n*******************解析结果*******************\r\n");
+		json_str = mymalloc(500);
+		json_str = (u8*)cJSON_Print(cjson_main);//打印json数据整体
+		printf("%s\r\n",json_str);
+		myfree(json_str);
+	#endif*/
+
+	//解析results
+	if((cjson_results = cJSON_GetObjectItem(cjson_main,"results")) != NULL)
 	{
 		int Arraysize = cJSON_GetArraySize(cjson_results);//获取results数组成员数
-		
-		/*解析location*/
-		if((cjson_resultsArray = cJSON_GetArrayItem(cjson_results,0)) != NULL)//解析第1个成员location
+		#ifdef DEBUG_EN
+		printf("cjson解析开始！\r\n");
+		printf("results Arraysize:%d\r\n",Arraysize);//打印数组大小，大小为1
+		#endif
+
+		if((cjson_resultsArray_Obj = cJSON_GetArrayItem(cjson_results,0)) != NULL)//解析results
 		{
-			if((cjson_keyvalue = cJSON_GetObjectItem(cjson_resultsArray,"name"))!=NULL)//解析数组成员location中name的键值
+#if 1			/*解析location*/
+			printf("解析location：\r\n");
+			if((cjson_Key = cJSON_GetObjectItem(cjson_resultsArray_Obj,"location"))!=NULL)//解析location
 			{
-				//sprintf("");
-				#ifdef DEBUG_EN
-				printf("\"name\":%s,\r\n",cjson_keyvalue->valuestring);//打印name的值
-				#endif
-				cJSON_Delete(cjson_resultsArray);//释放内存
+				if((cjson_Value = cJSON_GetObjectItem(cjson_Key,"name"))!=NULL)//解析name
+				{
+					sprintf((char*)userData->city,"%s",cjson_Value->valuestring);//把name的数据装入结构体成员
+					#ifdef DEBUG_EN
+					printf("\"name\":%s\r\n",cjson_Value->valuestring);//打印name的值
+					#endif
+					//cJSON_Delete(cjson_Key);//释放内存
+				}
+			}
+#endif				
+			/*解析now*/
+			printf("解析now：\r\n");
+			if((cjson_Key = cJSON_GetObjectItem(cjson_resultsArray_Obj,"now"))!=NULL)//解析now
+			{	
+#if 1				
+				printf("now\r\n");
+				if((cjson_Value = cJSON_GetObjectItem(cjson_Key,"text"))!=NULL)//解析text
+				{
+					sprintf(userData->text,"%s",cjson_Value->valuestring);//天气现象装入结构体成员
+					#ifdef DEBUG_EN
+					printf("\"text\":%s,\r\n",cjson_Value->valuestring);//打印text的值
+					#endif
+					//cJSON_Delete(cjson_Value);//删除text释放内存
+				}
+#endif
+			
+				if((cjson_Value = cJSON_GetObjectItem(cjson_Key,"code"))!=NULL)//解析text
+				{
+					userData->code = (char)atoi(cjson_Value->valuestring);//将字符串转换为char类型
+					#ifdef DEBUG_EN
+					printf("\"code\":%s,\r\n",cjson_Value->valuestring);//打印text的值
+					#endif
+					//cJSON_Delete(cjson_Value);//释放内存
+				}
+				
+				if((cjson_Value = cJSON_GetObjectItem(cjson_Key,"temperature"))!=NULL)//解析text
+				{
+					userData->temp = (char)atoi(cjson_Value->valuestring);
+					#ifdef DEBUG_EN
+					printf("\"temperature\":%s,\r\n",cjson_Value->valuestring);//打印text的值
+					#endif
+					//cJSON_Delete(cjson_Value);//释放内存
+				}
+				cJSON_Delete(cjson_main);//删除所有结构体,释放堆的内存
+			}
+			else
+			{
+				printf("Error before: [%s]\r\n",cJSON_GetErrorPtr()); //打印数据包语法错误的位置
+				return ;
 			}
 		}
-		
-		/*解析now*/
-		if((cjson_resultsArray = cJSON_GetArrayItem(cjson_results,1)) != NULL)//解析第2个成员now
-		{
-			if((cjson_keyvalue = cJSON_GetObjectItem(cjson_resultsArray,"text"))!=NULL)//解析text键值
-			{
-				//sprintf("");
-				#ifdef DEBUG_EN
-				printf("\"text\":%s,\r\n",cjson_keyvalue->valuestring);//打印name的值
-				#endif
-				cJSON_Delete(cjson_keyvalue);//释放内存
-			}
-			
-			if((cjson_keyvalue = cJSON_GetObjectItem(cjson_resultsArray,"code"))!=NULL)//解析code键值
-			{
-				//sprintf("");
-				#ifdef DEBUG_EN
-				printf("\"code\":%s,\r\n",cjson_keyvalue->valuestring);//打印name的值
-				#endif
-				cJSON_Delete(cjson_keyvalue);//释放内存
-			}
-			
-			if((cjson_keyvalue = cJSON_GetObjectItem(cjson_resultsArray,"temperature"))!=NULL)//解析text键值
-			{
-				//sprintf("");
-				#ifdef DEBUG_EN
-				printf("\"temperature\":%s\r\n",cjson_keyvalue->valuestring);//打印name的值
-				#endif
-				cJSON_Delete(cjson_keyvalue);//释放内存
-			}
-			cJSON_Delete(cjson_resultsArray);//释放内存
-		}
-			
 		/*解析lastupdate*/
 	}
 }
@@ -278,16 +301,15 @@ void cJSON_Parse_Uart(char* jsonBuf)
  *发送http请求，解析接收到的数据
  *使用此函数前必须先连接服务器并且进入透传模式 
  */
-void get_http(u8* request)
+void get_http(u8* request, u8 *response)
 {
-	__align(8) u8 response[300]={0};//mark： response的问题
 	u8 *p = NULL;
 	u8 *p1 = NULL;
 	u8 *p2 = NULL;
 	if(atk_8266_send_data(request,0,600))//如果请求失败
 	{
 		response[0]=0;
-		printf("请求失败1!\r\n");
+		//printf("请求失败1!\r\n");
 		return;
 	}
 	//请求成功
@@ -296,24 +318,24 @@ void get_http(u8* request)
 	{
 		if((p = wifi_check_cmd("{")) != NULL)//检查接收的数据是否正确，即是否为 { 开头的
 		{
-			printf("请求失败2!\r\n");
 			p1=(u8*)strstr((const char*)(p),"]");//先查找 ] 符号
-			printf("p1=(u8*)strstr((const char*)(p),\"]\");\r\n");
 			p2=(u8*)strstr((const char*)(p1+1),"}");//查找 } 符号，标记json数据的结尾
-			printf("p1=(u8*)strstr((const char*)(p1+1),\"}\");\r\n");
 			*(p2+1)=0;//加入结束符
-			
-			printf("die here!\r\n");
+			//printf("die here!\r\n");
 			sprintf((char*)response,"%s",p);	//打印json串到response中
-			printf("I am not die!\r\n");
+			//printf("I am not die!\r\n");
 			#ifdef DEBUG_EN
-			printf("接收到的数据:%s\r\n",response);//打印数据
+			printf("接收到的数据:\r\n%s\r\n",response);//打印数据
 			#endif
 		}
 	}
-	else 
-	{
-		printf("请求失败3!\r\n");
-		return ;
-	}
+	else return ;	
 }
+
+
+
+
+
+
+
+

@@ -30,6 +30,7 @@
 ..\obj\wifi.o: ..\STM32F10x_FWLib\inc\stm32f10x_usart.h
 ..\obj\wifi.o: ..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 ..\obj\wifi.o: ..\STM32F10x_FWLib\inc\misc.h
+..\obj\wifi.o: ..\HARDWARE\WiFi\Weather.h
 ..\obj\wifi.o: ..\HARDWARE\EspUART\EspUart.h
 ..\obj\wifi.o: ..\SYSTEM\delay\delay.h
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\string.h
@@ -37,3 +38,5 @@
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\wifi.o: ..\cJSON\cJSON.h
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stddef.h
+..\obj\wifi.o: ..\MALLOC\malloc.h
+..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdlib.h
