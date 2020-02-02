@@ -2,8 +2,10 @@
 #define  __WIFI_H
 #include "sys.h"
 #include "Weather.h"
+
+
 //注释掉DEBUG_EN可以关闭wifi.c中输出的串口调试信息
-//#define DEBUG_EN 
+#define DEBUG_EN 
 
 //宏定义
 #define OK	(u8*)"OK"
@@ -19,11 +21,12 @@
 u8 wifi_send_ATcmd(u8 *cmd,u8 *ack,u16 waittime);
 u8* wifi_check_cmd(u8 *str);
 u8 WiFi_module_check(void);
-u8 Connect_TCP_Server(u8 *ESP8266_Mode, u8 *ConnectMode, u8 *WiFi_SSID, u8 *WiFi_PSWD, u8 *ServerIP, u8 *Port);
+u8 Connect_TCP_Server(u8 *ipAddr,u8 *ConnectMode, u8 *WiFi_SSID, u8 *WiFi_PSWD, u8 *ServerIP, u8 *Port,u8 CIPMODE1_EN);
 u8 Exit_TransMode(void);
 u8 atk_8266_send_data(u8 *data,u8 *ack,u16 waittime);
 void get_IP_Addr(u8* ipbuf);
-void cJSON_Parse_Uart(char *jsonBuf);
+u8 Connect_AP(u8 *IP_Addr,u8 *WiFi_SSID, u8 *WiFi_PSWD);
+void cJSON_Parse_Weather(char *jsonBuf,WeatherData *userData);
 void get_http(u8* request, u8 *response);
 #endif
 

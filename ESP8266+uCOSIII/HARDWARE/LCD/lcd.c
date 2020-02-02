@@ -673,7 +673,7 @@ void LCD_Init(void)
  
 	GPIO_SetBits(GPIOB,GPIO_Pin_All);
 
-delay_ms(50); // delay 50 ms 
+	delay_ms(50); // delay 50 ms 
 	LCD_WriteReg(0x0000,0x0001);
 	delay_ms(50); // delay 50 ms 
   	lcddev.id = LCD_ReadReg(0x0000);   

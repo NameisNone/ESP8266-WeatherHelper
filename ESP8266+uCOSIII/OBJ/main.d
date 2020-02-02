@@ -40,3 +40,4 @@
 ..\obj\main.o: ..\HARDWARE\LCD\lcd.h
 ..\obj\main.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\main.o: ..\MALLOC\malloc.h
+..\obj\main.o: ..\HARDWARE\TEXT\Hz.h

@@ -71,66 +71,94 @@ u8 WiFi_module_check(void)
 	return status;
 }
 
-/*连接服务器*/
-//0，成功连接并进入透传模式；1，失败
-u8 Connect_TCP_Server(u8 *ESP8266_Mode, u8 *ConnectMode, u8 *WiFi_SSID, u8 *WiFi_PSWD, u8 *ServerIP, u8 *Port)
+/*连接wifi*/
+/*连接成功会返回当前的IP地址*/
+//0,连接成功并获取到ip地址，1：连接失败直接返回
+u8 Connect_AP(u8 *IP_Addr,u8 *WiFi_SSID, u8 *WiFi_PSWD)
 {
-	__align(8) u8 CWJAP[100]={0};
-	__align(8) u8 CIPSTART[100]={0};
+	u8 time=0;
+	u8 *CWJAP=mymalloc(100);//CWJAP指令
 	sprintf((char*)CWJAP,"AT+CWJAP=\"%s\",\"%s\"",(u8*)WiFi_SSID,(u8*)WiFi_PSWD);//打印wifi名称和密码到指令中
-	sprintf((char*)CIPSTART,"AT+CIPSTART=\"%s\",\"%s\",%s",ConnectMode,ServerIP,Port);//打印服务器信息到CIPSTART中
-	#ifdef DEBUG_EN
-	printf("CWJAP:%s\r\n",CWJAP);
-	printf("CIPSTART:%s\r\n",CIPSTART);
-	#endif
-	if(!wifi_send_ATcmd(ESP8266_Mode,OK,20))//1.首先设置STA模式
+	if(!wifi_send_ATcmd((u8*)"AT",(u8*)"OK",20))//查看当前是否为AT指令配置状态
 	{
-	  #ifdef DEBUG_EN
-				printf("STA模式设置成功！\r\n");
-		#endif
-		while(wifi_send_ATcmd((u8*)CWJAP,"OK",300))//2.接着连接wifi热点
+		while((wifi_send_ATcmd((u8*)CWJAP,(u8*)"OK",300)) && (time<=6))//发送连接指令，失败则重试重新连接6次
+		{
+			time++;
+			#ifdef DEBUG_EN
+				printf("连接wifi失败！！！正在尝试重新连接...\r\n");
+				printf("重新连接第%d次。。\r\n",time);
+			#endif
+		}
+		myfree(CWJAP);//释放内存	
+		if(time>6)//连接失败
 		{
 			#ifdef DEBUG_EN
-				printf("**********************\r\n");
-				printf("连接wifi成功！\r\n");
-				printf("当前wifi热点为：");
-				printf("SSID:%s\r\n",WiFi_SSID);
-				printf("PSWD:%s\r\n",WiFi_PSWD);
-				printf("**********************\r\n");
+			printf("***************************************wifi连接失败！！！");
 			#endif
-			if(!wifi_send_ATcmd((u8*)"AT+CIPMUX=0",OK,300))//3.设置单连接
-			{
-				#ifdef DEBUG_EN
-				printf("设置单连接成功!\r\n");				
-				#endif
-				if(!wifi_send_ATcmd((u8*)CIPSTART,OK,300))//4.连接服务器
-				{
-					#ifdef DEBUG_EN
-					printf("连接%s成功!\r\n",ServerIP);				
-					#endif
-					if(!wifi_send_ATcmd((u8*)"AT+CIPMODE=1",OK,20))//5.设置透传模式
-					{
-						#ifdef DEBUG_EN
-						printf("设置透传模式!\r\n");				
-						#endif
-						if(!wifi_send_ATcmd((u8*)"AT+CIPSEND",OK,20))
-						{
-							#ifdef DEBUG_EN
-							printf("开启透传模式!\r\n");				
-							#endif
-							return 0;
-						}else return 1;
-					}//else return 1;
-				}
-				//else return 1;
-			}
-			//else return 1;
+			return 1;
 		}
-		//else return 1;
+		else //连接成功
+		{
+			if(IP_Addr != NULL)//如果需要获取IP地址
+				get_IP_Addr(IP_Addr);//获取IP地址
+			return 0;
+		}			
 	}
-	//else return 1;
 	
 	return 1;
+}
+
+/*连接服务器,连接失败会退出*/
+//0，成功连接并进入透传模式；1，失败
+u8 Connect_TCP_Server(u8 *ipAddr,u8 *ConnectMode, u8 *WiFi_SSID, u8 *WiFi_PSWD, u8 *ServerIP, u8 *Port,u8 CIPMODE1_EN)
+{
+	u8 *CIPSTART=mymalloc(100);
+	sprintf((char*)CIPSTART,"AT+CIPSTART=\"%s\",\"%s\",%s",ConnectMode,ServerIP,Port);//打印服务器信息到CIPSTART中
+	#ifdef DEBUG_EN
+	printf("CIPSTART内容:%s\r\n",CIPSTART);
+	#endif
+	
+	//首先确定网络已连接
+	if(!Connect_AP(ipAddr,WiFi_SSID,WiFi_PSWD))
+	{
+		if(!wifi_send_ATcmd((u8*)"AT+CWMODE=1",OK,20))//设置STA模式
+		{
+			#ifdef DEBUG_EN
+				printf("设置AT+CWMODE=1,STA模式成功!\r\n");				
+			#endif
+			if(!wifi_send_ATcmd((u8*)"AT+CIPMUX=0",OK,300))//设置单连接
+			{
+				#ifdef DEBUG_EN
+				printf("设置AT+CIPMUX=0单连接成功!\r\n");				
+				#endif
+				if(!wifi_send_ATcmd((u8*)CIPSTART,OK,300))//连接服务器
+				{
+					#ifdef DEBUG_EN
+					printf("!!!成功连接服务器:%s\r\n",CIPSTART);				
+					#endif
+					myfree(CIPSTART);
+					if(CIPMODE1_EN)
+					{
+						if(!wifi_send_ATcmd((u8*)"AT+CIPMODE=1",OK,20))//设置透传模式
+						{
+							#ifdef DEBUG_EN
+							printf("!!!开启透传模式\r\n");				
+							#endif
+							if(!wifi_send_ATcmd((u8*)"AT+CIPSEND",OK,20))
+							{
+								#ifdef DEBUG_EN
+								printf("!!!开始透传!!!\r\n");				
+								#endif
+								return 0;
+							}					
+						}
+					}else return 0;
+				}
+			}
+		}
+	}
+	myfree(CIPSTART);//释放内存
+	return 1;//连接服务器失败
 }
 
 
@@ -160,7 +188,7 @@ u8 Exit_TransMode(void)
 /*获取IP地址*/
 void get_IP_Addr(u8* ipbuf)
 {
-	u8 *p,*p1;
+		u8 *p,*p1;
 		if(wifi_send_ATcmd("AT+CIFSR","OK",50))//获取WAN IP地址失败
 		{
 			ipbuf[0]=0;
@@ -198,9 +226,9 @@ u8 atk_8266_send_data(u8 *data,u8 *ack,u16 waittime)
 	return res;
 }
 
-WeatherData *userData;
+//WeatherData *userData;
 /*JSON解析函数*/
-void cJSON_Parse_Uart(char *jsonBuf)
+void cJSON_Parse_Weather(char *jsonBuf,WeatherData *userData)
 {
 	cJSON* cjson_main;
 	cJSON* cjson_results;
