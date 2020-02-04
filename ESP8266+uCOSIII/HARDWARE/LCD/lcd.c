@@ -2837,7 +2837,7 @@ void LCD_Draw_Circle(u16 x0,u16 y0,u8 r)
 //mode:叠加方式(1)还是非叠加方式(0)
 void LCD_ShowChar(u16 x,u16 y,u8 num,u8 size,u8 mode)
 {  							  
-    u8 temp,t1,t;
+  u8 temp,t1,t;
 	u16 y0=y;
 	u8 csize=(size/8+((size%8)?1:0))*(size/2);		//得到字体一个字符对应点阵集所占的字节数	
  	num=num-' ';//得到偏移后的值（ASCII字库是从空格开始取模，所以-' '就是对应字符的字库）

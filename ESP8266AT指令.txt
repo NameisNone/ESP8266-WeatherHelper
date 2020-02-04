@@ -2,6 +2,7 @@
 ------------
 SSID:CMCC-Y3ff
 PSWD:9uas4tfq
+zhiAT+CWJAP="CMCC-Y3ff","9uas4tfq"
 
 AT指令集合：
 1、设置STA模式

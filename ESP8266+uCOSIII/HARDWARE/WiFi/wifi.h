@@ -28,6 +28,7 @@ void get_IP_Addr(u8* ipbuf);
 u8 Connect_AP(u8 *IP_Addr,u8 *WiFi_SSID, u8 *WiFi_PSWD);
 void cJSON_Parse_Weather(char *jsonBuf,WeatherData *userData);
 void get_http(u8* request, u8 *response);
+void show_weather(u8 x,u8 y,u16 Wcolor,u16 backColor,u8 Code);
 #endif
 
 

@@ -40,3 +40,4 @@
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stddef.h
 ..\obj\wifi.o: ..\MALLOC\malloc.h
 ..\obj\wifi.o: F:\keil5.28\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\wifi.o: ..\HARDWARE\TEXT\Hz.h

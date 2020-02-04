@@ -5,12 +5,11 @@
 //天气信息结构体
 typedef struct 
 {
-	/*写了个BUG，使用指针出现问题，sprintf死机*/
-	char city[10];//城市
-	char text[30];//现象
+	/*指针需要分配内存，否则sprintf会死机*/
+	unsigned char *city;//城市city[10]
+	unsigned char *text;//现象text[30]
 	char code;//天气现象代码
 	char temp;//温度
-	char humity;//湿度
 	
 }WeatherData;
 
@@ -18,6 +17,7 @@ typedef struct
 * https://docs.seniverse.com/api/start/code.html
 *
 */
+/*
 typedef enum
 {
 	Sunny = 0,//晴（国内城市白天晴）
@@ -42,7 +42,7 @@ typedef enum
 	Ice_Rain,//冻雨
 	Sleet//雨夹雪  20
 }Phenomenon;
-
+*/
 
 #endif
 
